@@ -103,30 +103,21 @@ function GTAUI:SetSelection(index)
 		oldBtn.TextColor3 = self.Theme.Text
 		oldBtn.BackgroundTransparency = 0.5
 	end
-
 	if index > #self.Buttons then index = 1 end
 	if index < 1 then index = #self.Buttons end
-
 	self.SelectedIndex = index
 	local newBtn = self.Buttons[self.SelectedIndex].Instance
-
 	newBtn.BackgroundColor3 = self.Theme.ButtonHover
 	newBtn.TextColor3 = self.Theme.TextHover
 	newBtn.BackgroundTransparency = 0
-
 	self.CounterText.Text = tostring(self.SelectedIndex) .. " / " .. tostring(#self.Buttons)
-
-	-- Calcul du défilement automatique
 	local listTop = self.ListFrame.AbsolutePosition.Y
 	local listBottom = listTop + self.ListFrame.AbsoluteWindowSize.Y
 	local btnTop = newBtn.AbsolutePosition.Y
 	local btnBottom = btnTop + newBtn.AbsoluteSize.Y
-
 	if btnTop < listTop then
-		-- Le bouton est au-dessus de la zone visible
 		self.ListFrame.CanvasPosition = Vector2.new(0, self.ListFrame.CanvasPosition.Y - (listTop - btnTop))
 	elseif btnBottom > listBottom then
-		-- Le bouton est en dessous de la zone visible
 		self.ListFrame.CanvasPosition = Vector2.new(0, self.ListFrame.CanvasPosition.Y + (btnBottom - listBottom))
 	end
 end
@@ -168,15 +159,35 @@ function GTAUI:AddToggle(text, defaultState, callback)
 	return btn
 end
 
+function GTAUI:RemoveButton(btnInstance)
+	for i, btnData in ipairs(self.Buttons) do
+		if btnData.Instance == btnInstance then
+			btnInstance:Destroy()
+			table.remove(self.Buttons, i)
+			if #self.Buttons > 0 then
+				if self.SelectedIndex > #self.Buttons then
+					self:SetSelection(#self.Buttons)
+				else
+					self:SetSelection(self.SelectedIndex)
+				end
+			else
+				self.SelectedIndex = 1
+				self.CounterText.Text = "0 / 0"
+			end
+			break
+		end
+	end
+end
+
 function GTAUI:AddSubMenu(text, subMenuConfig)
 	subMenuConfig.PreviousMenu = self
 	local subMenu = GTAUI.new(subMenuConfig)
-	self:AddButton(text .. " >", function()
+	local btn = self:AddButton(text .. " >", function()
 		GTAUI.PlaySound("Select")
 		self:Close()
 		subMenu:Open()
 	end)
-	return subMenu
+	return subMenu, btn
 end
 
 function GTAUI:Open()
