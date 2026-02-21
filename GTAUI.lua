@@ -1,5 +1,9 @@
+-- \\ BY HYPERKASHER \\
+
 local GTAUI = {}
 GTAUI.__index = GTAUI
+
+-- \\ SERVICES \\
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
@@ -24,6 +28,8 @@ for name, id in pairs(SoundConfig) do
 	snd.Parent = SoundService
 	Sounds[name] = snd
 end
+
+-- \\ FUNCTIONS \\
 
 function GTAUI.PlaySound(name)
 	if Sounds[name] then Sounds[name]:Play() end
@@ -56,7 +62,7 @@ function GTAUI.new(config)
 	self.TargetPosition = UDim2.new(0.02, 0, 0.05, 0)
 	self.HiddenPosition = UDim2.new(-0.3, 0, 0.05, 0)
 	--local playerGui = Players.LocalPlayer:WaitForChild("PlayerGui")
-	local screenGui = CoreGuiService:FindFirstChild("GTA_UI_Master") or create("ScreenGui", {Name = "GTA_UI_Master", ResetOnSpawn = false, IgnoreGuiInset = true, Parent = CoreGuiService})
+	local screenGui = CoreGuiService:FindFirstChild("GTA_UI") or create("ScreenGui", {Name = "GTA_UI", ResetOnSpawn = false, IgnoreGuiInset = true, Parent = CoreGuiService})
 	self.MainFrame = create("Frame", {
 		Name = self.Title, Size = UDim2.new(0.25, 0, 0.65, 0), Position = self.HiddenPosition,
 		BackgroundTransparency = 1, Visible = false, Parent = screenGui
@@ -207,6 +213,8 @@ end
 function GTAUI:Toggle()
 	if self.IsOpen then self:Close() else self:Open() end
 end
+
+-- \\ LOGIC \\
 
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
 	if gameProcessed then return end
